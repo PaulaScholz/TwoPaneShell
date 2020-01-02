@@ -2,6 +2,8 @@
 
 This is `TwoPaneShell`, the UWP shell application used to host two-pane samples for dual-screen Windows devices.  `TwoPaneShell` consists of a MainPage hosting a [TwoPaneView](https://docs.microsoft.com/en-us/uwp/api/microsoft.ui.xaml.controls.twopaneview?view=winui-2.3) control and two Panes, which are placeholders for your own sample controls and content.
 
+![TwoPaneShell](/docimages/TwoPaneShell.png)
+
 A good introduction to `TwoPaneView` by [Fons Sonnemans](https://www.reflectionit.nl/blog/authors/fons-sonnemans) is available on [ReflectionIt](https://www.reflectionit.nl/blog/2019/xaml-twopaneview).
 
 The relative width of each pane is controlled by two `TwoPaneView` properties, the `Pane1Length` and `Pane2Length`, which are of type [GridLength](https://docs.microsoft.com/en-us/uwp/api/Windows.UI.Xaml.GridLength).  These properties use [Star sizing](https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.columndefinition.width) to support the dynamic layout concepts needed by `TwoPaneView` to respond to changes in screen size and position on dual-screen devices.
