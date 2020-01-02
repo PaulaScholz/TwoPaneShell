@@ -65,7 +65,7 @@ namespace TwoPaneShell
         /// <param name="e"></param>
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-
+            // put your code here
         }
 
         /// <summary>
