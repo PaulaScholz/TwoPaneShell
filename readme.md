@@ -87,6 +87,42 @@ We have written our own functions to determine the spanned status and applicatio
         /// </summary>
         public bool ApplicationIsSpanned { get; set; }
 
+                public MainPage()
+        {
+            this.InitializeComponent();
+
+            Pane1DominantWidth = new GridLength(1, GridUnitType.Star);
+            Pane1SharedWidth = new GridLength(0.5, GridUnitType.Star);
+            Pane2DominantWidth = new GridLength(0, GridUnitType.Star);
+            Pane2SharedWidth = new GridLength(0.5, GridUnitType.Star);
+
+            // point the static instance variable to this instance of the Page.
+            Current = this;
+
+            // We get the beginning height/width of the TwoPaneView in Loaded
+            Loaded += MainPage_Loaded;            
+
+            // This is called when the screen orientation changes
+            SizeChanged += MainPage_SizeChanged;
+
+            SetBothPanesEqual();
+        }
+
+        private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+
+            // this computes the current orientation and spanned status
+            QueryOrientation();
+
+            Debug.WriteLine("Actual Width of MainView is {0}", MainView.ActualWidth);
+            Debug.WriteLine("Actual Height of MainView is {0}", MainView.ActualHeight);
+
+            Debug.WriteLine(string.Format("CurrentOrientation is {0}", CurrentOrientation.ToString()));
+            Debug.WriteLine(string.Format("ApplicationIsSpanned = {0}", ApplicationIsSpanned.ToString()));
+
+            Debug.WriteLine("------------------------------------------------");
+        }
+
         /// <summary>
         /// Do any page-specific initialization here.
         /// </summary>
