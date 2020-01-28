@@ -59,6 +59,104 @@ Alternatively, the `Pane1Length` and `Pane2Length` properties of `MainView` may 
         public GridLength Pane2SharedWidth { get; set; }
 ```
 
+## Application Spanning and Screen Orientation
+Experiments with TwoPaneView and `ApplicationView.Orientation` values from the `Windows.UI.ViewManagement` namespaces show that these values are not consistently reliable during the course of the TwoPaneView application's lifetime. 
+
+The `Windows.Graphics.Display.CurrentOrientation` and `NativeOrientation` values also display unreliable results after application spanning or screen rotation in a TwoPaneView application.
+
+We have written our own functions to determine the spanned status and application orientation that rely on the initial and current width and height of the TwoPaneView.  Because the TwoPaneView always starts in an unspanned state, we store the `ActualWidth` and `ActualHeight` of TwoPaneView as private page properties and overload the `SizeChanged` event handler to compute the actual values, like this:
+
+```csharp
+        /// <summary>
+        /// The beginning width of TwoPaneView element, MainView
+        /// </summary>
+        private double BeginningWidth { get; set; }
+
+        /// <summary>
+        /// The beginning height of TwoPaneView element, MainView
+        /// </summary>
+        private double BeginningHeight { get; set; }
+
+        /// <summary>
+        /// The current ApplicationViewOrientation of the MainView (Portrait or Landscape)
+        /// </summary>
+        public ApplicationViewOrientation CurrentOrientation { get; set; }
+
+        /// <summary>
+        /// True if the application is spanned across two screens.
+        /// </summary>
+        public bool ApplicationIsSpanned { get; set; }
+
+        /// <summary>
+        /// Do any page-specific initialization here.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Get the initial size of the TwoPaneView element
+            BeginningWidth = MainView.ActualWidth;
+            BeginningHeight = MainView.ActualHeight;
+        }
+
+        /// <summary>
+        /// We compute the orientation and spanned status of the TwoPaneView here.
+        /// Results update the properties "ApplicationIsSpanned" and "CurrentOrientation"
+        /// </summary>
+        private void QueryOrientation()
+        {
+            // based on initial conditions and current conditions, compute orientation
+            double currentWidth = MainView.ActualWidth;
+            double currentHeight = MainView.ActualHeight;
+
+            // this runs before MainPage_Loaded, when BeginningWidth & BeginningHeight are zero
+            if(BeginningWidth !=0 )
+            {                
+                if(currentWidth == BeginningWidth && currentHeight == BeginningHeight)
+                {
+                    // if width and height are equal to the beginning width & height, we're not spanned
+                    ApplicationIsSpanned = false;
+                }
+                else if (currentWidth >= BeginningWidth && currentHeight >= BeginningHeight)
+                {
+                    // it is possible that currentWidth AND currentHeight might be equal to 
+                    // their beginning values but that is caught by the clause above.  If only
+                    // one of them is equal, then this clause is executed instead.
+                    ApplicationIsSpanned = true;
+                }
+                else
+                {
+                    ApplicationIsSpanned = false;
+                }
+            }
+            else
+            {
+                // Application always starts as not spanned
+                ApplicationIsSpanned = false;
+            }
+
+            // compute our orientation because we can't rely on DisplayInformation or ApplicationView values
+            if(currentWidth > currentHeight && !ApplicationIsSpanned)
+            {
+                CurrentOrientation = ApplicationViewOrientation.Landscape;
+            }
+            else if (currentWidth < currentHeight && !ApplicationIsSpanned)
+            {
+                CurrentOrientation = ApplicationViewOrientation.Portrait;
+            }
+            else if (ApplicationIsSpanned && currentWidth > currentHeight)
+            {
+                CurrentOrientation = ApplicationViewOrientation.Portrait;
+            }
+            else
+            {
+                CurrentOrientation = ApplicationViewOrientation.Landscape;
+            }
+        }
+```
+
+
+
 
 
 
