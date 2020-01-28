@@ -9,7 +9,13 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Button Style="{StaticResource NavigationBackButtonNormalStyle}" />
         <TwoPaneView x:Name="MainView"
+                 Grid.Row="1"
                  Pane1Length="1*"
                  Pane2Length="0*"
                  PanePriority="Pane1"

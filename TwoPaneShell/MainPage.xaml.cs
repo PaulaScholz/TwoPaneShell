@@ -2,6 +2,8 @@
 using System.Runtime.CompilerServices;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using System.Diagnostics;
+using Windows.UI.ViewManagement;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -27,6 +29,25 @@ namespace TwoPaneShell
         public GridLength Pane2DominantWidth { get; set; }
         public GridLength Pane2SharedWidth { get; set; }
 
+        /// <summary>
+        /// The beginning width of TwoPaneView element, MainView
+        /// </summary>
+        private double BeginningWidth { get; set; }
+
+        /// <summary>
+        /// The beginning height of TwoPaneView element, MainView
+        /// </summary>
+        private double BeginningHeight { get; set; }
+
+        /// <summary>
+        /// The current ApplicationViewOrientation of the MainView (Portrait or Landscape)
+        /// </summary>
+        public ApplicationViewOrientation CurrentOrientation { get; set; }
+
+        /// <summary>
+        /// True if the application is spanned across two screens.
+        /// </summary>
+        public bool ApplicationIsSpanned { get; set; }
 
         public MainPage()
         {
@@ -40,10 +61,28 @@ namespace TwoPaneShell
             // point the static instance variable to this instance of the Page.
             Current = this;
 
-            // uncomment this if you have page-specific initialization
-            //Loaded += MainPage_Loaded;
+            // We get the beginning height/width of the TwoPaneView in Loaded
+            Loaded += MainPage_Loaded;            
+
+            // This is called when the screen orientation changes
+            SizeChanged += MainPage_SizeChanged;
 
             SetBothPanesEqual();
+        }
+
+        private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+
+            // this computes the current orientation and spanned status
+            QueryOrientation();
+
+            Debug.WriteLine("Actual Width of MainView is {0}", MainView.ActualWidth);
+            Debug.WriteLine("Actual Height of MainView is {0}", MainView.ActualHeight);
+
+            Debug.WriteLine(string.Format("CurrentOrientation is {0}", CurrentOrientation.ToString()));
+            Debug.WriteLine(string.Format("ApplicationIsSpanned = {0}", ApplicationIsSpanned.ToString()));
+
+            Debug.WriteLine("------------------------------------------------");
         }
 
         /// <summary>
@@ -53,7 +92,64 @@ namespace TwoPaneShell
         /// <param name="e"></param>
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            // put your code here
+            // Get the initial size of the TwoPaneView element
+            BeginningWidth = MainView.ActualWidth;
+            BeginningHeight = MainView.ActualHeight;
+        }
+
+        /// <summary>
+        /// We compute the orientation and spanned status of the TwoPaneView here.
+        /// Results update the properties "ApplicationIsSpanned" and "CurrentOrientation"
+        /// </summary>
+        private void QueryOrientation()
+        {
+            // based on initial conditions and current conditions, compute orientation
+            double currentWidth = MainView.ActualWidth;
+            double currentHeight = MainView.ActualHeight;
+
+            // this runs before MainPage_Loaded, when BeginningWidth & BeginningHeight are zero
+            if(BeginningWidth !=0 )
+            {                
+                if(currentWidth == BeginningWidth && currentHeight == BeginningHeight)
+                {
+                    // if width and height are equal to the beginning width & height, we're not spanned
+                    ApplicationIsSpanned = false;
+                }
+                else if (currentWidth >= BeginningWidth && currentHeight >= BeginningHeight)
+                {
+                    // it is possible that currentWidth AND currentHeight might be equal to 
+                    // their beginning values but that is caught by the clause above.  If only
+                    // one of them is equal, then this clause is executed instead.
+                    ApplicationIsSpanned = true;
+                }
+                else
+                {
+                    ApplicationIsSpanned = false;
+                }
+            }
+            else
+            {
+                // Application always starts as not spanned
+                ApplicationIsSpanned = false;
+            }
+
+            // compute our orientation because we can't rely on DisplayInformation or ApplicationView values
+            if(currentWidth > currentHeight && !ApplicationIsSpanned)
+            {
+                CurrentOrientation = ApplicationViewOrientation.Landscape;
+            }
+            else if (currentWidth < currentHeight && !ApplicationIsSpanned)
+            {
+                CurrentOrientation = ApplicationViewOrientation.Portrait;
+            }
+            else if (ApplicationIsSpanned && currentWidth > currentHeight)
+            {
+                CurrentOrientation = ApplicationViewOrientation.Portrait;
+            }
+            else
+            {
+                CurrentOrientation = ApplicationViewOrientation.Landscape;
+            }
         }
 
         /// <summary>
