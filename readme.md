@@ -87,7 +87,7 @@ We have written our own functions to determine the spanned status and applicatio
         /// </summary>
         public bool ApplicationIsSpanned { get; set; }
 
-                public MainPage()
+        public MainPage()
         {
             this.InitializeComponent();
 
