@@ -5,6 +5,7 @@
     xmlns:local="using:TwoPaneShell"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -14,31 +15,31 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Button Style="{StaticResource NavigationBackButtonNormalStyle}" />
-        <TwoPaneView x:Name="MainView"
+        <controls:TwoPaneView x:Name="MainView"
                  Grid.Row="1"
                  Pane1Length="1*"
-                 Pane2Length="0*"
+                 Pane2Length="1*"
                  PanePriority="Pane1"
-                 MinTallModeHeight="1000"
-                 MinWideModeWidth="500"
+                 MinTallModeHeight="641"
+                 MinWideModeWidth="641"
                  TallModeConfiguration="TopBottom"
                  WideModeConfiguration="LeftRight">
-            <TwoPaneView.Pane1>
+            <controls:TwoPaneView.Pane1>
                 <!-- Replace this with your own Pane1 content. -->
                 <Grid Background="Wheat"
                   Padding="8"
                   Margin="4">
                     <TextBlock Text="Pane1" FontSize="36" HorizontalAlignment="Center" />
                 </Grid>
-            </TwoPaneView.Pane1>
-            <TwoPaneView.Pane2>
+            </controls:TwoPaneView.Pane1>
+            <controls:TwoPaneView.Pane2>
                 <!-- Replace this with your own Pane2 content. -->
                 <Grid Background="Blue"
                   Padding="8"
                   Margin="4">
                     <TextBlock Text="Pane2" FontSize="36" Foreground="White" HorizontalAlignment="Center" />
                 </Grid>
-            </TwoPaneView.Pane2>
-        </TwoPaneView>
+            </controls:TwoPaneView.Pane2>
+        </controls:TwoPaneView>
     </Grid>
 </Page>

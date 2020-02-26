@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using MUXC = Microsoft.UI.Xaml.Controls;
 using System.Diagnostics;
 using Windows.UI.ViewManagement;
 
@@ -67,7 +68,63 @@ namespace TwoPaneShell
             // This is called when the screen orientation changes
             SizeChanged += MainPage_SizeChanged;
 
-            SetBothPanesEqual();
+            MainView.ModeChanged += MainView_ModeChanged;
+
+            //SetBothPanesEqual();
+        }
+
+        private void MainView_ModeChanged(Microsoft.UI.Xaml.Controls.TwoPaneView sender, object args)
+        {
+            Microsoft.UI.Xaml.Controls.TwoPaneViewMode theMode = sender.Mode;
+
+            Debug.WriteLine(string.Format("MinWideModeWidth is {0}", MainView.MinWideModeWidth));
+            Debug.WriteLine(string.Format("MinTallModeHeight is {0}", MainView.MinTallModeHeight));
+
+            double minWideModeWidth = MainView.MinWideModeWidth;
+            double minTallModeHeight = MainView.MinTallModeHeight;
+            double windowWidth = Window.Current.Bounds.Width;
+            double windowHeight = Window.Current.Bounds.Height;
+
+            if(windowWidth > minWideModeWidth)
+            {
+                Debug.WriteLine("Window width > minWideModeWidth, should be in Wide mode");
+            }
+            else if (windowWidth < minWideModeWidth && windowHeight > minTallModeHeight)
+            {
+                Debug.WriteLine("Window width < minWideModeWidth && windowHeight > minTallModeHeight, should be in Tall mode");
+            }
+            else if (windowWidth < minWideModeWidth && windowHeight < minTallModeHeight)
+            {
+                Debug.WriteLine("Window width < minWideModeWidth && windowHeight < minTallModeHeight, should be in Single Pane mode"); 
+            }
+            else
+            {
+                Debug.WriteLine("Can't compute mode");
+            }
+
+            switch (theMode)
+            {
+                case MUXC.TwoPaneViewMode.SinglePane:
+                    //
+                    Debug.WriteLine("MainView_ModeChanged TwoPaneView Mode is SinglePane");
+                    
+                    break;
+                case MUXC.TwoPaneViewMode.Tall:
+                    //
+                    Debug.WriteLine("MainView_ModeChanged TwoPaneView Mode is Tall");
+
+                    break;
+                case MUXC.TwoPaneViewMode.Wide:
+                    //
+                    Debug.WriteLine("MainView_ModeChanged TwoPaneView Mode is Wide");
+
+                    break;
+                default:
+                    //
+                    break;
+            }
+
+            Debug.WriteLine(string.Format("TwoPaneView.Pane1Lenth = {0}, Pane2Length = {1}", MainView.Pane1Length, MainView.Pane2Length));
         }
 
         private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -75,6 +132,9 @@ namespace TwoPaneShell
 
             // this computes the current orientation and spanned status
             QueryOrientation();
+
+            Debug.WriteLine("Width of Window is {0}",Window.Current.Bounds.Width);
+            Debug.WriteLine("Height of Window is {0}", Window.Current.Bounds.Height);
 
             Debug.WriteLine("Actual Width of MainView is {0}", MainView.ActualWidth);
             Debug.WriteLine("Actual Height of MainView is {0}", MainView.ActualHeight);
